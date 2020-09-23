@@ -20,11 +20,8 @@ class MUFFINWAR_API AMainGameMode : public AGameModeBase
 	UBaseMenu* MenuWidget;
 	UUserWidget* LoadingWidget;
 
-	enum class UIControl;
-
 	void ShowLoadingScreen();
-	void ChangeUIControl(UIControl ControlType);
-	void SetInputMode(EMouseLockMode LockMode, bool bShowMouse);
+	void ShowMouseCursor(bool bShowMouse);
 protected: 
 	UFUNCTION(BlueprintCallable)
 	void InitializeWidgets(TSubclassOf<UUserWidget> MenuWidgetClass, TSubclassOf<UUserWidget> LoadingWidgetClass);
