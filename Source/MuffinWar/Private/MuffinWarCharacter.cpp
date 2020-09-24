@@ -2,6 +2,7 @@
 
 #include "MuffinWarCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "BaseBullet.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -45,6 +46,10 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	Scene = CreateDefaultSubobject<USceneComponent>("Scene");
+	Scene->SetupAttachment(RootComponent);
+
+	BulletClass = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,6 +79,9 @@ void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMuffinWarCharacter::OnResetVR);
+	
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AMuffinWarCharacter::StartShooting);
+	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AMuffinWarCharacter::StopShooting);
 }
 
 
@@ -130,5 +138,30 @@ void AMuffinWarCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void AMuffinWarCharacter::StartShooting() {
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("StartShooting called"));
+	}
+	SpawnBullet();
+}
+
+void AMuffinWarCharacter::StopShooting() {
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StopShooting called"));
+	}
+}
+
+void AMuffinWarCharacter::SaveBulletClass(UClass* Class) {
+	BulletClass = Class;
+}
+
+void AMuffinWarCharacter::SpawnBullet() {
+	if (BulletClass) {
+		FVector Location = Scene->GetComponentLocation();
+		FRotator Rotation = Scene->GetComponentRotation() - FRotator(90,0,0);
+		GetWorld()->SpawnActor<ABaseBullet>(BulletClass, Location, Rotation, FActorSpawnParameters());
 	}
 }

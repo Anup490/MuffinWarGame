@@ -11,6 +11,7 @@ class AMuffinWarCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -18,6 +19,8 @@ class AMuffinWarCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	UClass* BulletClass;
 public:
 	AMuffinWarCharacter();
 
@@ -30,6 +33,8 @@ public:
 	float BaseLookUpRate;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class USceneComponent* Scene;
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -58,11 +63,16 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	void StartShooting();
+	void StopShooting();
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+	void SpawnBullet();
 
+	UFUNCTION(BlueprintCallable)
+	void SaveBulletClass(UClass* Class);
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
