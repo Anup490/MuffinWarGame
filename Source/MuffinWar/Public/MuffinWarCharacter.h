@@ -21,6 +21,7 @@ class AMuffinWarCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 
 	UClass* BulletClass;
+	bool bIsShooting;
 public:
 	AMuffinWarCharacter();
 
@@ -78,5 +79,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	bool IsShooting() const;
 };
 

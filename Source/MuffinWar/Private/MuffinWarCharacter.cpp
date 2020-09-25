@@ -50,6 +50,7 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 	Scene->SetupAttachment(RootComponent);
 
 	BulletClass = 0;
+	bIsShooting = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,11 +144,13 @@ void AMuffinWarCharacter::MoveRight(float Value)
 
 void AMuffinWarCharacter::StartShooting() 
 {
+	bIsShooting = true;
 	SpawnBullet();
 }
 
 void AMuffinWarCharacter::StopShooting() 
 {
+	bIsShooting = false;
 }
 
 void AMuffinWarCharacter::SaveBulletClass(UClass* Class) 
@@ -162,4 +165,8 @@ void AMuffinWarCharacter::SpawnBullet()
 		FRotator Rotation = Scene->GetComponentRotation();
 		GetWorld()->SpawnActor<ABaseBullet>(BulletClass, Location, Rotation, FActorSpawnParameters());
 	}
+}
+
+bool AMuffinWarCharacter::IsShooting() const{
+	return bIsShooting;
 }

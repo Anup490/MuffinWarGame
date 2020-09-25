@@ -2,10 +2,12 @@
 
 
 #include "BaseMuffinAnimInstance.h"
+#include "MuffinWarCharacter.h"
 
 UBaseMuffinAnimInstance::UBaseMuffinAnimInstance() {
 	bIsFalling = false;
-	bIsJumping = true;
+	bIsJumping = false;
+	bIsShooting = false;
 	fSpeed = 0;
 }
 
@@ -15,5 +17,9 @@ void UBaseMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds) {
 		fSpeed = Actor->GetVelocity().Size();
 		bIsJumping = Actor->GetVelocity().Z > 0;
 		bIsFalling = Actor->GetVelocity().Z < 0;
+	}
+	AMuffinWarCharacter* Muffin = Cast<AMuffinWarCharacter>(Actor);
+	if (Muffin) {
+		bIsShooting = Muffin->IsShooting();
 	}
 }

@@ -21,6 +21,9 @@ protected:
 	bool bIsJumping;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsShooting;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float fSpeed;
 public:
 	UBaseMuffinAnimInstance();
