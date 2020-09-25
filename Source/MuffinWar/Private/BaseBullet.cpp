@@ -16,7 +16,8 @@ ABaseBullet::ABaseBullet()
 	ParticleSystem = 0;
 }
 
-void ABaseBullet::SaveParticleSystem(UParticleSystem* ExplosionParticleSystem) {
+void ABaseBullet::SaveParticleSystem(UParticleSystem* ExplosionParticleSystem) 
+{
 	ParticleSystem = ExplosionParticleSystem;
 }
 
@@ -37,11 +38,13 @@ void ABaseBullet::OnHit(
 	UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse,
 	const FHitResult& Hit
-) {
+) 
+{
 	Explode();
 }
 
-void ABaseBullet::Explode() {
+void ABaseBullet::Explode() 
+{
 	Destroy();
 	if (ParticleSystem) {
 		UGameplayStatics::SpawnEmitterAtLocation(

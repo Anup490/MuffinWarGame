@@ -141,27 +141,25 @@ void AMuffinWarCharacter::MoveRight(float Value)
 	}
 }
 
-void AMuffinWarCharacter::StartShooting() {
-	if (GEngine) {
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("StartShooting called"));
-	}
+void AMuffinWarCharacter::StartShooting() 
+{
 	SpawnBullet();
 }
 
-void AMuffinWarCharacter::StopShooting() {
-	if (GEngine) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StopShooting called"));
-	}
+void AMuffinWarCharacter::StopShooting() 
+{
 }
 
-void AMuffinWarCharacter::SaveBulletClass(UClass* Class) {
+void AMuffinWarCharacter::SaveBulletClass(UClass* Class) 
+{
 	BulletClass = Class;
 }
 
-void AMuffinWarCharacter::SpawnBullet() {
+void AMuffinWarCharacter::SpawnBullet() 
+{
 	if (BulletClass) {
 		FVector Location = Scene->GetComponentLocation();
-		FRotator Rotation = Scene->GetComponentRotation() - FRotator(90,0,0);
+		FRotator Rotation = Scene->GetComponentRotation();
 		GetWorld()->SpawnActor<ABaseBullet>(BulletClass, Location, Rotation, FActorSpawnParameters());
 	}
 }
