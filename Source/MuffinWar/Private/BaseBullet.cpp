@@ -13,18 +13,11 @@ ABaseBullet::ABaseBullet()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Projectile = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
 	Mesh->SetupAttachment(Capsule);
-	ParticleSystem = 0;
-}
-
-void ABaseBullet::SaveParticleSystem(UParticleSystem* ExplosionParticleSystem) 
-{
-	ParticleSystem = ExplosionParticleSystem;
 }
 
 void ABaseBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	Capsule->OnComponentHit.AddDynamic(this, &ABaseBullet::OnHit);
 }
 
 void ABaseBullet::Tick(float DeltaTime)
@@ -32,23 +25,15 @@ void ABaseBullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABaseBullet::OnHit(
-	UPrimitiveComponent* HitComp,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse,
-	const FHitResult& Hit
-) 
+void ABaseBullet::OnHit(UParticleSystem* ParticleSystem) 
 {
-	Explode();
+	Explode(ParticleSystem);
 }
 
-void ABaseBullet::Explode() 
+void ABaseBullet::Explode(UParticleSystem* ParticleSystem)
 {
 	Destroy();
-	if (ParticleSystem) {
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),ParticleSystem,GetActorLocation(),FRotator(0, 0, 0),FVector(1, 1, 1),true,EPSCPoolMethod::None,true
-		);
-	}
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(), ParticleSystem, GetActorLocation(), FRotator(0, 0, 0), FVector(1, 1, 1), true, EPSCPoolMethod::None, true
+	);
 }

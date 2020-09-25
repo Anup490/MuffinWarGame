@@ -14,8 +14,7 @@ class MUFFINWAR_API ABaseBullet : public AActor
 {
 	GENERATED_BODY()
 
-	UParticleSystem* ParticleSystem;
-	void Explode();
+	void Explode(UParticleSystem* ParticleSystem);
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* Capsule;
@@ -27,11 +26,10 @@ protected:
 	UProjectileMovementComponent* Projectile;
 
 	UFUNCTION(BlueprintCallable)
-	void SaveParticleSystem(UParticleSystem* ExplosionParticleSystem);
+	void OnHit(UParticleSystem* ParticleSystem);
 	
 	virtual void BeginPlay() override;
 public:	
 	ABaseBullet();
 	virtual void Tick(float DeltaTime) override;
-	void OnHit(UPrimitiveComponent* HitComp,AActor* OtherActor,UPrimitiveComponent* OtherComp,FVector NormalImpulse,const FHitResult& Hit);
 };
