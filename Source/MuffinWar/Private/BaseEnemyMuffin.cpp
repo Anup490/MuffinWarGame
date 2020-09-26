@@ -2,13 +2,11 @@
 #include "BaseEnemyMuffin.h"
 #include "BaseBullet.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ABaseEnemyMuffin::ABaseEnemyMuffin()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	Capsule = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Skeletal Mesh");
-	SkeletalMesh->SetupAttachment(Capsule);
 	bIsDead = false;
 }
 

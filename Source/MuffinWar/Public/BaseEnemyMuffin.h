@@ -3,23 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "BaseEnemyMuffin.generated.h"
 
 UCLASS()
-class MUFFINWAR_API ABaseEnemyMuffin : public APawn
+class MUFFINWAR_API ABaseEnemyMuffin : public ACharacter
 {
 	GENERATED_BODY()
 
 	bool bIsDead;
 	void Kill();
 protected:
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-	class UCapsuleComponent* Capsule;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	USkeletalMeshComponent* SkeletalMesh;
-
 	UFUNCTION(BlueprintCallable)
 	void OnHit(AActor* OtherActor);
 	virtual void BeginPlay() override;

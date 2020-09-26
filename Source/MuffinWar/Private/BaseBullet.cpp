@@ -1,10 +1,10 @@
+#include "BaseBullet.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
-#include "BaseBullet.h"
 
 ABaseBullet::ABaseBullet()
 {
