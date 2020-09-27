@@ -13,6 +13,7 @@ ABaseBullet::ABaseBullet()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Projectile = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
 	Mesh->SetupAttachment(Capsule);
+	bHasNotExploded = true;
 }
 
 void ABaseBullet::BeginPlay()
@@ -32,8 +33,17 @@ void ABaseBullet::OnHit(UParticleSystem* ParticleSystem)
 
 void ABaseBullet::Explode(UParticleSystem* ParticleSystem)
 {
+	if (bHasNotExploded) {
+		bHasNotExploded = false;
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(), ParticleSystem, GetActorLocation(), FRotator(0, 0, 0), FVector(1, 1, 1), true, EPSCPoolMethod::None, true
+		);
+	}
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, this, &ABaseBullet::Kill, 1.0f, false, 1.0f);
+}
+
+void ABaseBullet::Kill()
+{
 	Destroy();
-	UGameplayStatics::SpawnEmitterAtLocation(
-		GetWorld(), ParticleSystem, GetActorLocation(), FRotator(0, 0, 0), FVector(1, 1, 1), true, EPSCPoolMethod::None, true
-	);
 }

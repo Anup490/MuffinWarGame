@@ -14,7 +14,9 @@ class MUFFINWAR_API ABaseBullet : public AActor
 {
 	GENERATED_BODY()
 
+	bool bHasNotExploded;
 	void Explode(UParticleSystem* ParticleSystem);
+	void Kill();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* Capsule;
