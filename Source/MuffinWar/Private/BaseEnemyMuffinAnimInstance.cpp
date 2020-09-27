@@ -20,5 +20,14 @@ void UBaseEnemyMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds) {
 	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(Actor);
 	if (Muffin) {
 		bIsDead = Muffin->IsDead();
+		bIsAttacking = Muffin->ShouldAttack();
+	}
+}
+
+void UBaseEnemyMuffinAnimInstance::StopAttacking() {
+	AActor* Actor = GetOwningActor();
+	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(Actor);
+	if (Muffin) {
+		Muffin->SetAttackFlag(false);
 	}
 }

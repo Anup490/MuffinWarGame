@@ -15,6 +15,14 @@ class MUFFINWAR_API ABaseEnemyAIController : public AAIController
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	class UAIPerceptionComponent* Perception;
+
 	UFUNCTION(BlueprintCallable)
 	void ActivateAI(UBehaviorTree* Tree);
+
+	UFUNCTION(BlueprintCallable)
+	void DetectPlayer();
+public:
+	ABaseEnemyAIController();
 };

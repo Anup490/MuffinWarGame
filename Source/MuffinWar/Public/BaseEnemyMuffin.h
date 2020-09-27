@@ -12,6 +12,7 @@ class MUFFINWAR_API ABaseEnemyMuffin : public ACharacter
 	GENERATED_BODY()
 
 	bool bIsDead;
+	bool bShouldAttack;
 	void Kill();
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -22,4 +23,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	bool IsDead() const;
+	bool ShouldAttack() const;
+	void SetAttackFlag(bool bAttack);
 };

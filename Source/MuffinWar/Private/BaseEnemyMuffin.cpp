@@ -8,6 +8,7 @@ ABaseEnemyMuffin::ABaseEnemyMuffin()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bIsDead = false;
+	bShouldAttack = false;
 }
 
 void ABaseEnemyMuffin::BeginPlay()
@@ -28,6 +29,16 @@ void ABaseEnemyMuffin::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 bool ABaseEnemyMuffin::IsDead() const
 {
 	return bIsDead;
+}
+
+bool ABaseEnemyMuffin::ShouldAttack() const
+{
+	return bShouldAttack;
+}
+
+void ABaseEnemyMuffin::SetAttackFlag(bool bAttack)
+{
+	bShouldAttack = bAttack;
 }
 
 void ABaseEnemyMuffin::OnHit(AActor* OtherActor)

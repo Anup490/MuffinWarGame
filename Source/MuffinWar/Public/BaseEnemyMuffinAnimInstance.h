@@ -28,6 +28,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float fSpeed;
+
+	UFUNCTION(BlueprintCallable)
+	void StopAttacking();
 public:
 	UBaseEnemyMuffinAnimInstance();
 	void NativeUpdateAnimation(float fDeltaSeconds) override;
