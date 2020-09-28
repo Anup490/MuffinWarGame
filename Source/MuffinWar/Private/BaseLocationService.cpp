@@ -4,7 +4,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-#define BLACKBOARD_KEY "Destination"
+#define BLACKBOARD_KEY_PLAYER "Destination"
 
 void UBaseLocationService::OnActivate(APawn* Pawn) 
 {
@@ -15,5 +15,5 @@ void UBaseLocationService::OnActivate(APawn* Pawn)
 		nullptr,
 		nullptr
 	);
-	UAIBlueprintHelperLibrary::GetBlackboard(Pawn)->SetValueAsVector(BLACKBOARD_KEY, Destination);
+	UAIBlueprintHelperLibrary::GetBlackboard(Pawn)->SetValueAsVector(BLACKBOARD_KEY_PLAYER, Destination);
 }

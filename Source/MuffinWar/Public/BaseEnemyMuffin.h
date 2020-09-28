@@ -15,8 +15,18 @@ class MUFFINWAR_API ABaseEnemyMuffin : public ACharacter
 	bool bShouldAttack;
 	void Kill();
 protected:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	class UBoxComponent* Box;
+
 	UFUNCTION(BlueprintCallable)
 	void OnHit(AActor* OtherActor);
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapBegin(AActor* OtherActor);
+	
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapEnd(AActor* OtherActor);
+
 	virtual void BeginPlay() override;
 public:	
 	ABaseEnemyMuffin();

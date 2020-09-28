@@ -1,12 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BaseEnemyMuffin.h"
 #include "BaseBullet.h"
+#include "MuffinWarCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/BoxComponent.h"
 
 ABaseEnemyMuffin::ABaseEnemyMuffin()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	Box = CreateDefaultSubobject<UBoxComponent>("Box");
+	Box->SetupAttachment(GetCapsuleComponent());
 	bIsDead = false;
 	bShouldAttack = false;
 }
@@ -47,6 +51,20 @@ void ABaseEnemyMuffin::OnHit(AActor* OtherActor)
 		bIsDead = true;
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &ABaseEnemyMuffin::Kill, 1.0f, false, 1.0f);
+	}
+}
+
+void ABaseEnemyMuffin::OnOverlapBegin(AActor* OtherActor)
+{
+	if (Cast<AMuffinWarCharacter>(OtherActor)) {
+		bShouldAttack = true;
+	}
+}
+
+void ABaseEnemyMuffin::OnOverlapEnd(AActor* OtherActor)
+{
+	if (Cast<AMuffinWarCharacter>(OtherActor)) {
+		bShouldAttack = false;
 	}
 }
 
