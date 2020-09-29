@@ -2,7 +2,8 @@
 #include "BaseEnemyMuffinAnimInstance.h"
 #include "BaseEnemyMuffin.h"
 
-UBaseEnemyMuffinAnimInstance::UBaseEnemyMuffinAnimInstance() {
+UBaseEnemyMuffinAnimInstance::UBaseEnemyMuffinAnimInstance() 
+{
 	bIsFalling = false;
 	bIsJumping = false;
 	bIsAttacking = false;
@@ -10,24 +11,29 @@ UBaseEnemyMuffinAnimInstance::UBaseEnemyMuffinAnimInstance() {
 	fSpeed = 0;
 }
 
-void UBaseEnemyMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds) {
+void UBaseEnemyMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds) 
+{
 	AActor* Actor = GetOwningActor();
-	if (Actor) {
+	if (Actor) 
+	{
 		fSpeed = Actor->GetVelocity().Size();
 		bIsJumping = Actor->GetVelocity().Z > 0;
 		bIsFalling = Actor->GetVelocity().Z < 0;
 	}
 	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(Actor);
-	if (Muffin) {
+	if (Muffin) 
+	{
 		bIsDead = Muffin->IsDead();
 		bIsAttacking = Muffin->ShouldAttack();
 	}
 }
 
-void UBaseEnemyMuffinAnimInstance::StopAttacking() {
+void UBaseEnemyMuffinAnimInstance::StopAttacking() 
+{
 	AActor* Actor = GetOwningActor();
 	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(Actor);
-	if (Muffin) {
+	if (Muffin) 
+	{
 		Muffin->SetAttackFlag(false);
 	}
 }

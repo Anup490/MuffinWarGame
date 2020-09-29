@@ -4,12 +4,15 @@
 #include "BaseMenu.h"
 #include "MainGameMode.h"
 
-void UBaseMenu::RegisterOnStartCallback(AMainGameMode* GameMode) {
+void UBaseMenu::RegisterOnStartCallback(AMainGameMode* GameMode) 
+{
 	MainGameMode = GameMode;
 }
 
-void UBaseMenu::OnClickStart() {
-	if (MainGameMode) {
+void UBaseMenu::OnClickStart() 
+{
+	if (MainGameMode) 
+	{
 		MainGameMode->LoadGame();
 	}
 }

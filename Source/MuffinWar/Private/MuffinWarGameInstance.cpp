@@ -6,6 +6,7 @@
 
 void UMuffinWarGameInstance::LoadMenu() {}
 
-void UMuffinWarGameInstance::LoadGame() {
+void UMuffinWarGameInstance::LoadGame() 
+{
 	UGameplayStatics::OpenLevel(GetWorld(),FName("Game"),true, FString());
 }

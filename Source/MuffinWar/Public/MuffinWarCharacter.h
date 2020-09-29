@@ -83,6 +83,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveBulletClass(UClass* Class);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowHUD(TSubclassOf<class UBaseHUD> UserWidgetClass);
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

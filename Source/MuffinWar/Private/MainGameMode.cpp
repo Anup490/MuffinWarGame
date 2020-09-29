@@ -6,21 +6,25 @@
 #include "Kismet/GameplayStatics.h"
 #include "MuffinWarGameInstance.h"
 
-void AMainGameMode::InitializeWidgets(TSubclassOf<UUserWidget> MenuWidgetClass, TSubclassOf<UUserWidget> LoadingWidgetClass) {
+void AMainGameMode::InitializeWidgets(TSubclassOf<UUserWidget> MenuWidgetClass, TSubclassOf<UUserWidget> LoadingWidgetClass) 
+{
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), MenuWidgetClass);
 	MenuWidget = Cast<UBaseMenu>(Widget);
 	LoadingWidget = CreateWidget<UUserWidget>(GetWorld(), LoadingWidgetClass);
 }
 
-void AMainGameMode::ShowMainMenu() {
-	if (MenuWidget) {
+void AMainGameMode::ShowMainMenu() 
+{
+	if (MenuWidget) 
+	{
 		MenuWidget->RegisterOnStartCallback(this);
 		MenuWidget->AddToViewport();
 		ShowMouseCursor(true);
 	}
 }
 
-void AMainGameMode::ShowLoadingScreen() {
+void AMainGameMode::ShowLoadingScreen() 
+{
 	if (MenuWidget) {
 		MenuWidget->RemoveFromViewport();
 	}
@@ -30,15 +34,18 @@ void AMainGameMode::ShowLoadingScreen() {
 	}
 }
 
-void AMainGameMode::LoadGame() {
+void AMainGameMode::LoadGame() 
+{
 	ShowLoadingScreen();
 	UMuffinWarGameInstance* MuffinWarGame = Cast<UMuffinWarGameInstance>(GetGameInstance());
-	if (MuffinWarGame) {
+	if (MuffinWarGame) 
+	{
 		MuffinWarGame->LoadGame();
 	}
 }
 
-void AMainGameMode::ShowMouseCursor(bool bShowMouse) {
+void AMainGameMode::ShowMouseCursor(bool bShowMouse) 
+{
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Controller->bShowMouseCursor = bShowMouse;
 }

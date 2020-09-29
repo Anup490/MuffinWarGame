@@ -4,6 +4,7 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "BaseBullet.h"
 #include "BaseEnemyMuffin.h"
+#include "BaseHUD.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -161,6 +162,14 @@ void AMuffinWarCharacter::StopShooting()
 void AMuffinWarCharacter::SaveBulletClass(UClass* Class) 
 {
 	BulletClass = Class;
+}
+
+void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
+{
+	UBaseHUD* HUD = CreateWidget<UBaseHUD>(GetWorld(), UserWidgetClass);
+	if (HUD) {
+		HUD->AddToViewport();
+	}
 }
 
 void AMuffinWarCharacter::SpawnBullet() 
