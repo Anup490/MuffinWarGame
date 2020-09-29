@@ -22,6 +22,9 @@ class AMuffinWarCharacter : public ACharacter
 
 	UClass* BulletClass;
 	bool bIsShooting;
+	FTimerHandle TimerHandle;
+
+	void DamageMuffin();
 public:
 	AMuffinWarCharacter();
 
@@ -36,6 +39,12 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USceneComponent* Scene;
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapBegin(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();

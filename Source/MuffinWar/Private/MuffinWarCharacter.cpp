@@ -3,9 +3,11 @@
 #include "MuffinWarCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "BaseBullet.h"
+#include "BaseEnemyMuffin.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -160,13 +162,40 @@ void AMuffinWarCharacter::SaveBulletClass(UClass* Class)
 
 void AMuffinWarCharacter::SpawnBullet() 
 {
-	if (BulletClass) {
+	if (BulletClass) 
+	{
 		FVector Location = Scene->GetComponentLocation();
 		FRotator Rotation = Scene->GetComponentRotation();
 		GetWorld()->SpawnActor<ABaseBullet>(BulletClass, Location, Rotation, FActorSpawnParameters());
 	}
 }
 
-bool AMuffinWarCharacter::IsShooting() const{
+bool AMuffinWarCharacter::IsShooting() const
+{
 	return bIsShooting;
+}
+
+void AMuffinWarCharacter::OnOverlapBegin(AActor* OtherActor, UPrimitiveComponent* OtherComponent)
+{
+	ABaseEnemyMuffin* Enemy = Cast<ABaseEnemyMuffin>(OtherActor);
+	if (Enemy && !(Enemy->IsDead()) && Cast<UBoxComponent>(OtherComponent)) 
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::DamageMuffin, 1.0f, true, 0.01f);	
+	}
+}
+
+void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent)
+{
+	if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	}
+}
+
+void AMuffinWarCharacter::DamageMuffin() 
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OUCH!! Enemy Attacked"));
+	}
 }
