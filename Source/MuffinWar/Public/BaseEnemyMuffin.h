@@ -14,6 +14,7 @@ class MUFFINWAR_API ABaseEnemyMuffin : public ACharacter
 	bool bIsDead;
 	bool bShouldAttack;
 	void Kill();
+	void NotifyController();
 protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	class UBoxComponent* Box;

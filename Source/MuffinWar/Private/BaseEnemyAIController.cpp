@@ -10,17 +10,11 @@
 
 ABaseEnemyAIController::ABaseEnemyAIController() 
 {
-	PrimaryActorTick.bCanEverTick = true;
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>("Perception");
 }
 
-void ABaseEnemyAIController::Tick(float DeltaTime) {
-	Super::Tick(DeltaTime);
-	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(GetCharacter());
-	if (Muffin)
-	{
-		GetBlackboardComponent()->SetValueAsBool(BLACKBOARD_KEY_ATTACK, Muffin->ShouldAttack());
-	}
+void ABaseEnemyAIController::UpdateBlackBoardAttackStatus(bool bShouldAttack) {
+	GetBlackboardComponent()->SetValueAsBool(BLACKBOARD_KEY_ATTACK, bShouldAttack);
 }
 
 void ABaseEnemyAIController::ActivateAI(UBehaviorTree* Tree) 

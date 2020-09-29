@@ -25,5 +25,5 @@ protected:
 	void DetectPlayer();
 public:
 	ABaseEnemyAIController();
-	virtual void Tick(float DeltaTime) override;
+	void UpdateBlackBoardAttackStatus(bool bShouldAttack);
 };

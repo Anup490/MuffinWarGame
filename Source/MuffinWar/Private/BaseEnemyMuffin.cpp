@@ -2,6 +2,7 @@
 #include "BaseEnemyMuffin.h"
 #include "BaseBullet.h"
 #include "MuffinWarCharacter.h"
+#include "BaseEnemyAIController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/BoxComponent.h"
@@ -47,7 +48,8 @@ void ABaseEnemyMuffin::SetAttackFlag(bool bAttack)
 
 void ABaseEnemyMuffin::OnHit(AActor* OtherActor)
 {
-	if (Cast<ABaseBullet>(OtherActor)) {
+	if (Cast<ABaseBullet>(OtherActor)) 
+	{
 		bIsDead = true;
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &ABaseEnemyMuffin::Kill, 1.0f, false, 1.0f);
@@ -58,17 +60,29 @@ void ABaseEnemyMuffin::OnOverlapBegin(AActor* OtherActor)
 {
 	if (Cast<AMuffinWarCharacter>(OtherActor)) {
 		bShouldAttack = true;
+		NotifyController();
 	}
 }
 
 void ABaseEnemyMuffin::OnOverlapEnd(AActor* OtherActor)
 {
-	if (Cast<AMuffinWarCharacter>(OtherActor)) {
+	if (Cast<AMuffinWarCharacter>(OtherActor)) 
+	{
 		bShouldAttack = false;
+		NotifyController();
 	}
 }
 
 void ABaseEnemyMuffin::Kill() 
 {
 	Destroy();
+}
+
+void ABaseEnemyMuffin::NotifyController()
+{
+	ABaseEnemyAIController* AIController = Cast<ABaseEnemyAIController>(GetController());
+	if (AIController)
+	{
+		AIController->UpdateBlackBoardAttackStatus(bShouldAttack);
+	}
 }
