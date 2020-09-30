@@ -23,6 +23,7 @@ class AMuffinWarCharacter : public ACharacter
 	UClass* BulletClass;
 	bool bIsShooting;
 	FTimerHandle TimerHandle;
+	class UBaseHUD* HUD;
 
 	void DamageMuffin();
 public:

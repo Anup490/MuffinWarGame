@@ -166,7 +166,7 @@ void AMuffinWarCharacter::SaveBulletClass(UClass* Class)
 
 void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
 {
-	UBaseHUD* HUD = CreateWidget<UBaseHUD>(GetWorld(), UserWidgetClass);
+	HUD = CreateWidget<UBaseHUD>(GetWorld(), UserWidgetClass);
 	if (HUD) {
 		HUD->AddToViewport();
 	}
@@ -206,8 +206,8 @@ void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveCompo
 
 void AMuffinWarCharacter::DamageMuffin() 
 {
-	if (GEngine)
+	if (HUD) 
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OUCH!! Enemy Attacked"));
+		HUD->OnDamageReceived();
 	}
 }
