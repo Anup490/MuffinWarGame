@@ -10,10 +10,22 @@
 
 ABaseEnemyAIController::ABaseEnemyAIController() 
 {
+	PrimaryActorTick.bCanEverTick = true;
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>("Perception");
 }
 
-void ABaseEnemyAIController::UpdateBlackBoardAttackStatus(bool bShouldAttack) {
+void ABaseEnemyAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	AMuffinWarCharacter* Player = Cast<AMuffinWarCharacter>(GetBlackboardComponent()->GetValueAsObject(BLACKBOARD_KEY_PLAYER));
+	if (Player && Player->IsDead()) 
+	{
+		GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, nullptr);
+	}
+}
+
+void ABaseEnemyAIController::UpdateBlackBoardAttackStatus(bool bShouldAttack) 
+{
 	GetBlackboardComponent()->SetValueAsBool(BLACKBOARD_KEY_ATTACK, bShouldAttack);
 }
 
@@ -30,13 +42,13 @@ void ABaseEnemyAIController::DetectPlayer()
 	for (AActor* Actor : PerceivedActors) 
 	{
 		Player = Cast<AMuffinWarCharacter>(Actor);
-		if (Player) 
+		if (Player && !(Player->IsDead())) 
 		{
 			GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, Player);
 			break;
 		}
 	}
-	if (!Player) 
+	if (!Player || Player->IsDead())
 	{
 		GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, nullptr);
 		ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(GetCharacter());
