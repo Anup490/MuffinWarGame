@@ -22,6 +22,7 @@ class AMuffinWarCharacter : public ACharacter
 
 	UClass* BulletClass;
 	bool bIsShooting;
+	bool bIsDead;
 	FTimerHandle TimerHandle;
 	class UBaseHUD* HUD;
 
@@ -94,5 +95,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	bool IsShooting() const;
+	void Kill();
+	bool IsDead() const;
 };
 

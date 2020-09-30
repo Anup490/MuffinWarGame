@@ -9,6 +9,7 @@ UBaseMuffinAnimInstance::UBaseMuffinAnimInstance()
 	bIsFalling = false;
 	bIsJumping = false;
 	bIsShooting = false;
+	bIsDead = false;
 	fSpeed = 0;
 }
 
@@ -25,5 +26,6 @@ void UBaseMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds)
 	if (Muffin) 
 	{
 		bIsShooting = Muffin->IsShooting();
+		bIsDead = Muffin->IsDead();
 	}
 }

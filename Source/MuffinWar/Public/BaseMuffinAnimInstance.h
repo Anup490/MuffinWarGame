@@ -24,6 +24,9 @@ protected:
 	bool bIsShooting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsDead;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float fSpeed;
 public:
 	UBaseMuffinAnimInstance();

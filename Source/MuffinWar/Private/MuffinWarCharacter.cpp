@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMuffinWarCharacter
@@ -54,6 +55,7 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 
 	BulletClass = 0;
 	bIsShooting = false;
+	bIsDead = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,62 +98,77 @@ void AMuffinWarCharacter::OnResetVR()
 
 void AMuffinWarCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AMuffinWarCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AMuffinWarCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-	SetActorRotation(YawRotation);
+	if (!bIsDead)
+	{
+		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		SetActorRotation(YawRotation);
+	}
 }
 
 void AMuffinWarCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (!bIsDead)
+	{
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void AMuffinWarCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if (!bIsDead)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if ((Controller != NULL) && (Value != 0.0f))
+		{
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
 void AMuffinWarCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if (!bIsDead)
 	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if ((Controller != NULL) && (Value != 0.0f))
+		{
+			// find out which way is right
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
+			// get right vector 
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// add movement in that direction
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
 void AMuffinWarCharacter::StartShooting() 
 {
-	bIsShooting = true;
-	SpawnBullet();
+	if (!bIsDead)
+	{
+		bIsShooting = true;
+		SpawnBullet();
+	}
 }
 
 void AMuffinWarCharacter::StopShooting() 
@@ -166,7 +183,7 @@ void AMuffinWarCharacter::SaveBulletClass(UClass* Class)
 
 void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
 {
-	HUD = CreateWidget<UBaseHUD>(GetWorld(), UserWidgetClass);
+	HUD = CreateWidget<UBaseHUD>(UGameplayStatics::GetPlayerController(this,0), UserWidgetClass);
 	if (HUD) {
 		HUD->AddToViewport();
 	}
@@ -174,7 +191,7 @@ void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
 
 void AMuffinWarCharacter::SpawnBullet() 
 {
-	if (BulletClass) 
+	if (BulletClass)
 	{
 		FVector Location = Scene->GetComponentLocation();
 		FRotator Rotation = Scene->GetComponentRotation();
@@ -189,18 +206,24 @@ bool AMuffinWarCharacter::IsShooting() const
 
 void AMuffinWarCharacter::OnOverlapBegin(AActor* OtherActor, UPrimitiveComponent* OtherComponent)
 {
-	ABaseEnemyMuffin* Enemy = Cast<ABaseEnemyMuffin>(OtherActor);
-	if (Enemy && !(Enemy->IsDead()) && Cast<UBoxComponent>(OtherComponent)) 
+	if (!bIsDead)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::DamageMuffin, 1.0f, true, 0.01f);	
+		ABaseEnemyMuffin* Enemy = Cast<ABaseEnemyMuffin>(OtherActor);
+		if (Enemy && !(Enemy->IsDead()) && Cast<UBoxComponent>(OtherComponent))
+		{
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::DamageMuffin, 1.0f, true, 0.01f);
+		}
 	}
 }
 
 void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent)
 {
-	if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
+	if (!bIsDead)
 	{
-		GetWorldTimerManager().ClearTimer(TimerHandle);
+		if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
+		{
+			GetWorldTimerManager().ClearTimer(TimerHandle);
+		}
 	}
 }
 
@@ -210,4 +233,17 @@ void AMuffinWarCharacter::DamageMuffin()
 	{
 		HUD->OnDamageReceived();
 	}
+}
+
+void AMuffinWarCharacter::Kill()
+{
+	if (!bIsDead)
+	{
+		bIsDead = true;
+	}
+}
+
+bool AMuffinWarCharacter::IsDead() const
+{
+	return bIsDead;
 }
