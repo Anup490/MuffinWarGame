@@ -25,6 +25,7 @@ class AMuffinWarCharacter : public ACharacter
 	bool bIsDead;
 	FTimerHandle TimerHandle;
 	class UBaseHUD* HUD;
+	class UInputComponent* InputComponent;
 
 	void DamageMuffin();
 public:

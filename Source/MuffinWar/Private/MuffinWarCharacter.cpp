@@ -1,5 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "MuffinWarCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "BaseBullet.h"
@@ -13,9 +12,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-
-//////////////////////////////////////////////////////////////////////////
-// AMuffinWarCharacter
 
 AMuffinWarCharacter::AMuffinWarCharacter()
 {
@@ -54,12 +50,10 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 	Scene->SetupAttachment(RootComponent);
 
 	BulletClass = 0;
+	InputComponent = 0;
 	bIsShooting = false;
 	bIsDead = false;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Input
 
 void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -88,8 +82,9 @@ void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AMuffinWarCharacter::StartShooting);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AMuffinWarCharacter::StopShooting);
-}
 
+	InputComponent = PlayerInputComponent;
+}
 
 void AMuffinWarCharacter::OnResetVR()
 {
@@ -109,9 +104,9 @@ void AMuffinWarCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Lo
 void AMuffinWarCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	if (!bIsDead)
 	{
-		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		SetActorRotation(YawRotation);
@@ -121,10 +116,7 @@ void AMuffinWarCharacter::TurnAtRate(float Rate)
 void AMuffinWarCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	if (!bIsDead)
-	{
-		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-	}
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMuffinWarCharacter::MoveForward(float Value)
@@ -164,11 +156,8 @@ void AMuffinWarCharacter::MoveRight(float Value)
 
 void AMuffinWarCharacter::StartShooting() 
 {
-	if (!bIsDead)
-	{
-		bIsShooting = true;
-		SpawnBullet();
-	}
+	bIsShooting = true;
+	SpawnBullet();
 }
 
 void AMuffinWarCharacter::StopShooting() 
@@ -184,7 +173,8 @@ void AMuffinWarCharacter::SaveBulletClass(UClass* Class)
 void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
 {
 	HUD = CreateWidget<UBaseHUD>(UGameplayStatics::GetPlayerController(this,0), UserWidgetClass);
-	if (HUD) {
+	if (HUD) 
+	{
 		HUD->AddToViewport();
 	}
 }
@@ -239,7 +229,11 @@ void AMuffinWarCharacter::Kill()
 {
 	if (!bIsDead)
 	{
-		bIsDead = true;
+		bIsDead = true;	
+		if (InputComponent)
+		{
+			InputComponent->ClearActionBindings();
+		}
 	}
 }
 
