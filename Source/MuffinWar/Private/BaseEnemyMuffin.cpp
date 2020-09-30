@@ -58,7 +58,9 @@ void ABaseEnemyMuffin::OnHit(AActor* OtherActor)
 
 void ABaseEnemyMuffin::OnOverlapBegin(AActor* OtherActor)
 {
-	if (Cast<AMuffinWarCharacter>(OtherActor)) {
+	AMuffinWarCharacter* Player = Cast<AMuffinWarCharacter>(OtherActor);
+	if (Player && !(Player->IsDead()))
+	{
 		bShouldAttack = true;
 		NotifyController();
 	}

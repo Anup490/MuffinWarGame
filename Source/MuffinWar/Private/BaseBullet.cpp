@@ -40,7 +40,7 @@ void ABaseBullet::Explode(UParticleSystem* ParticleSystem)
 		);
 	}
 	FTimerHandle Handle;
-	GetWorldTimerManager().SetTimer(Handle, this, &ABaseBullet::Kill, 1.0f, false, 1.0f);
+	GetWorldTimerManager().SetTimer(Handle, this, &ABaseBullet::Kill, 1.0f, false, 0.1f);
 }
 
 void ABaseBullet::Kill()

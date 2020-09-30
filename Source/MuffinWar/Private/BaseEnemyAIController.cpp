@@ -12,15 +12,19 @@ ABaseEnemyAIController::ABaseEnemyAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>("Perception");
+	bIsPlayerAlive = true;
 }
 
 void ABaseEnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AMuffinWarCharacter* Player = Cast<AMuffinWarCharacter>(GetBlackboardComponent()->GetValueAsObject(BLACKBOARD_KEY_PLAYER));
-	if (Player && Player->IsDead()) 
+	if (bIsPlayerAlive)
 	{
-		GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, nullptr);
+		AMuffinWarCharacter* Player = Cast<AMuffinWarCharacter>(GetBlackboardComponent()->GetValueAsObject(BLACKBOARD_KEY_PLAYER));
+		if (Player && Player->IsDead())
+		{
+			ForgetPlayer();
+		}
 	}
 }
 
@@ -48,13 +52,20 @@ void ABaseEnemyAIController::DetectPlayer()
 			break;
 		}
 	}
-	if (!Player || Player->IsDead())
+	if (!Player)
 	{
 		GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, nullptr);
-		ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(GetCharacter());
-		if (Muffin) 
-		{
-			Muffin->SetAttackFlag(false);
-		}
+	}
+}
+
+void ABaseEnemyAIController::ForgetPlayer()
+{
+	bIsPlayerAlive = false;
+	GetBlackboardComponent()->SetValueAsObject(BLACKBOARD_KEY_PLAYER, nullptr);
+	GetBlackboardComponent()->SetValueAsBool(BLACKBOARD_KEY_ATTACK, false);
+	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(GetCharacter());
+	if (Muffin)
+	{
+		Muffin->SetAttackFlag(false);
 	}
 }

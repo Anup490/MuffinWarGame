@@ -27,13 +27,3 @@ void UBaseEnemyMuffinAnimInstance::NativeUpdateAnimation(float fDeltaSeconds)
 		bIsAttacking = Muffin->ShouldAttack();
 	}
 }
-
-void UBaseEnemyMuffinAnimInstance::StopAttacking() 
-{
-	AActor* Actor = GetOwningActor();
-	ABaseEnemyMuffin* Muffin = Cast<ABaseEnemyMuffin>(Actor);
-	if (Muffin) 
-	{
-		Muffin->SetAttackFlag(false);
-	}
-}

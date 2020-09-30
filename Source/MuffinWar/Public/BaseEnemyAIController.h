@@ -14,6 +14,8 @@ class MUFFINWAR_API ABaseEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 
+	bool bIsPlayerAlive;
+	void ForgetPlayer();
 protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	class UAIPerceptionComponent* Perception;
