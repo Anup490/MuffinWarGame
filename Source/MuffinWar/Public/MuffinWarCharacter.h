@@ -39,6 +39,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	void ResumeHUDDisplay();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USceneComponent* Scene;
@@ -48,6 +49,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void OnPauseButtonPressed();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();

@@ -4,6 +4,7 @@
 #include "BaseBullet.h"
 #include "BaseEnemyMuffin.h"
 #include "BaseHUD.h"
+#include "MuffinWarGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -55,6 +56,14 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 	bIsDead = false;
 }
 
+void AMuffinWarCharacter::ResumeHUDDisplay()
+{
+	if (HUD)
+	{
+		HUD->AddToViewport();
+	}
+}
+
 void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -82,6 +91,7 @@ void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AMuffinWarCharacter::StartShooting);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AMuffinWarCharacter::StopShooting);
+	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMuffinWarCharacter::OnPauseButtonPressed);
 
 	InputComponent = PlayerInputComponent;
 }
@@ -213,6 +223,24 @@ void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveCompo
 		if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
 		{
 			GetWorldTimerManager().ClearTimer(TimerHandle);
+		}
+	}
+}
+
+void AMuffinWarCharacter::OnPauseButtonPressed()
+{
+	AMuffinWarGameMode* GameMode = Cast<AMuffinWarGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+	{
+		if (GameMode->IsGamePaused())
+		{
+			GameMode->UnpauseGame();
+			HUD->AddToViewport();
+		}
+		else
+		{
+			HUD->RemoveFromParent();
+			GameMode->PauseGame(this);
 		}
 	}
 }

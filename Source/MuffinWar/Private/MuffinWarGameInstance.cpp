@@ -4,9 +4,12 @@
 #include "MuffinWarGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
-void UMuffinWarGameInstance::LoadMenu() {}
+void UMuffinWarGameInstance::LoadMenu() 
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Main"), true, FString());
+}
 
 void UMuffinWarGameInstance::LoadGame() 
 {
-	UGameplayStatics::OpenLevel(GetWorld(),FName("Game"),true, FString());
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Game"), true, FString());
 }
