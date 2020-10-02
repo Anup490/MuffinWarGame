@@ -18,11 +18,15 @@ AMuffinWarGameMode::AMuffinWarGameMode()
 	bIsGamePaused = false;
 }
 
-void AMuffinWarGameMode::InitializeWidgets(TSubclassOf<UUserWidget> PauseMenuWidgetClass
-	, TSubclassOf<class UUserWidget> LoadingScreenWidgetClass)
+void AMuffinWarGameMode::InitializeWidgets(
+	TSubclassOf<class UUserWidget> PauseMenuWidgetClass,
+	TSubclassOf<class UUserWidget> LoadingScreenWidgetClass, 
+	TSubclassOf<class UUserWidget> GameOverWidgetClass
+)
 {
 	PauseMenuWidget = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidgetClass);
 	LoadScreenWidget = CreateWidget<UUserWidget>(GetWorld(), LoadingScreenWidgetClass);
+	GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass);
 }
 
 void AMuffinWarGameMode::PauseGame(AMuffinWarCharacter* Player)
@@ -39,6 +43,15 @@ void AMuffinWarGameMode::PauseGame(AMuffinWarCharacter* Player)
 bool AMuffinWarGameMode::IsGamePaused()
 {
 	return bIsGamePaused;
+}
+
+void AMuffinWarGameMode::OnPlayerDeath()
+{
+	if (GameOverWidget)
+	{
+		GameOverWidget->AddToViewport();
+		UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+	}
 }
 
 void AMuffinWarGameMode::UnpauseGame()

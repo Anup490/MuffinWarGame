@@ -14,15 +14,20 @@ class AMuffinWarGameMode : public AGameModeBase
 	bool bIsGamePaused;
 	class UUserWidget* PauseMenuWidget;
 	class UUserWidget* LoadScreenWidget;
+	class UUserWidget* GameOverWidget;
 	class AMuffinWarCharacter* MuffinWarCharacter;
 protected:
 	UFUNCTION(BlueprintCallable)
-	void InitializeWidgets(TSubclassOf<class UUserWidget> PauseMenuWidgetClass
-		, TSubclassOf<class UUserWidget> LoadingScreenWidgetClass);
+	void InitializeWidgets(
+		TSubclassOf<class UUserWidget> PauseMenuWidgetClass,
+		TSubclassOf<class UUserWidget> LoadingScreenWidgetClass,
+		TSubclassOf<class UUserWidget> GameOverWidgetClass
+	);
 public:
 	AMuffinWarGameMode();
 	void PauseGame(class AMuffinWarCharacter* Player);
 	bool IsGamePaused();
+	void OnPlayerDeath();
 
 	UFUNCTION(BlueprintCallable)
 	void UnpauseGame();

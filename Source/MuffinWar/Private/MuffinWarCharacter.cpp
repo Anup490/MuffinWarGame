@@ -114,9 +114,9 @@ void AMuffinWarCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Lo
 void AMuffinWarCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	if (!bIsDead)
 	{
+		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		SetActorRotation(YawRotation);
@@ -126,7 +126,10 @@ void AMuffinWarCharacter::TurnAtRate(float Rate)
 void AMuffinWarCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (!bIsDead)
+	{
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void AMuffinWarCharacter::MoveForward(float Value)
@@ -261,6 +264,12 @@ void AMuffinWarCharacter::Kill()
 		if (InputComponent)
 		{
 			InputComponent->ClearActionBindings();
+		}
+		AMuffinWarGameMode* GameMode = Cast<AMuffinWarGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (GameMode)
+		{
+			HUD->RemoveFromParent();
+			GameMode->OnPlayerDeath();
 		}
 	}
 }
