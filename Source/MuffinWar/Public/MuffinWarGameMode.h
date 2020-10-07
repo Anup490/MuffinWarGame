@@ -28,6 +28,7 @@ public:
 	void PauseGame(class AMuffinWarCharacter* Player);
 	bool IsGamePaused();
 	void OnPlayerDeath();
+	void StartPlay() override;
 
 	UFUNCTION(BlueprintCallable)
 	void UnpauseGame();

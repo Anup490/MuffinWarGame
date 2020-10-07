@@ -35,8 +35,16 @@ void AMuffinWarGameMode::PauseGame(AMuffinWarCharacter* Player)
 	MuffinWarCharacter = Player;
 	if (bIsGamePaused && PauseMenuWidget)
 	{
+		APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+		if (Controller)
+		{
+			FInputModeGameAndUI InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			InputMode.SetHideCursorDuringCapture(true);
+			Controller->SetInputMode(InputMode);
+			Controller->bShowMouseCursor = true;
+		}
 		PauseMenuWidget->AddToViewport();
-		UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
 	}
 }
 
@@ -49,9 +57,25 @@ void AMuffinWarGameMode::OnPlayerDeath()
 {
 	if (GameOverWidget)
 	{
+		APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+		if (Controller)
+		{
+			FInputModeGameAndUI InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			InputMode.SetHideCursorDuringCapture(true);
+			Controller->SetInputMode(InputMode);
+			Controller->bShowMouseCursor = true;
+		}
 		GameOverWidget->AddToViewport();
-		UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
 	}
+}
+
+void AMuffinWarGameMode::StartPlay()
+{
+	Super::StartPlay();
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	FInputModeGameOnly InputMode;
+	Controller->SetInputMode(InputMode);	
 }
 
 void AMuffinWarGameMode::UnpauseGame()
@@ -59,7 +83,13 @@ void AMuffinWarGameMode::UnpauseGame()
 	bIsGamePaused = !(UGameplayStatics::SetGamePaused(GetWorld(), false));
 	if (!bIsGamePaused && PauseMenuWidget)
 	{
-		UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+		APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+		if (Controller)
+		{
+			FInputModeGameOnly InputMode;
+			Controller->SetInputMode(InputMode);
+			Controller->bShowMouseCursor = false;
+		}
 		PauseMenuWidget->RemoveFromViewport();
 		if (MuffinWarCharacter)
 		{
