@@ -10,30 +10,26 @@ UCLASS(minimalapi)
 class AMuffinWarGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
-	bool bIsGamePaused;
-	class UUserWidget* PauseMenuWidget;
-	class UUserWidget* LoadScreenWidget;
-	class UUserWidget* GameOverWidget;
-	class AMuffinWarCharacter* MuffinWarCharacter;
 protected:
-	UFUNCTION(BlueprintCallable)
-	void InitializeWidgets(
-		TSubclassOf<class UUserWidget> PauseMenuWidgetClass,
-		TSubclassOf<class UUserWidget> LoadingScreenWidgetClass,
-		TSubclassOf<class UUserWidget> GameOverWidgetClass
-	);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsGamePaused;
 public:
 	AMuffinWarGameMode();
-	void PauseGame(class AMuffinWarCharacter* Player);
-	bool IsGamePaused();
-	void OnPlayerDeath();
 	void StartPlay() override;
 
 	UFUNCTION(BlueprintCallable)
+	bool IsGamePaused();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void PauseGame();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnPlayerDeath();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void UnpauseGame();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void QuitGame();
 };
 

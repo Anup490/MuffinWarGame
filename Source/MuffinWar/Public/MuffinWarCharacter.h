@@ -39,6 +39,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UFUNCTION(BlueprintCallable)
 	void ResumeHUDDisplay();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

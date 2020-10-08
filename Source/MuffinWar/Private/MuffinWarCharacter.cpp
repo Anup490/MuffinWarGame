@@ -243,7 +243,7 @@ void AMuffinWarCharacter::OnPauseButtonPressed()
 		else
 		{
 			HUD->RemoveFromParent();
-			GameMode->PauseGame(this);
+			GameMode->PauseGame();
 		}
 	}
 }

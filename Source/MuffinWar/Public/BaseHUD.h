@@ -14,6 +14,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnHealthFinish();
 public:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnDamageReceived();
 };

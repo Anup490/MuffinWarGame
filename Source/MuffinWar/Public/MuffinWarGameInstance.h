@@ -15,6 +15,9 @@ class MUFFINWAR_API UMuffinWarGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
+
+	UFUNCTION(BlueprintCallable)
 	void LoadGame();
 };
