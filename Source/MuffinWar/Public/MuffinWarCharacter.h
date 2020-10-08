@@ -11,7 +11,6 @@ class AMuffinWarCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -24,10 +23,9 @@ class AMuffinWarCharacter : public ACharacter
 	bool bIsShooting;
 	bool bIsDead;
 	FTimerHandle TimerHandle;
-	class UBaseHUD* HUD;
 	class UInputComponent* InputComponent;
 
-	void DamageMuffin();
+	void OnOverlap();
 public:
 	AMuffinWarCharacter();
 
@@ -52,7 +50,7 @@ protected:
 	void OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
 
 	UFUNCTION(BlueprintCallable)
-	void OnPauseButtonPressed();
+	void OnPauseButtonPressed(); 
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -92,8 +90,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SaveBulletClass(UClass* Class);
 
-	UFUNCTION(BlueprintCallable)
-	void ShowHUD(TSubclassOf<class UBaseHUD> UserWidgetClass);
+	UFUNCTION(BlueprintImplementableEvent)
+	void DamageMuffin();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowHUD();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RemoveHUD();
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

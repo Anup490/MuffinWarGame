@@ -58,10 +58,7 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 
 void AMuffinWarCharacter::ResumeHUDDisplay()
 {
-	if (HUD)
-	{
-		HUD->AddToViewport();
-	}
+	ShowHUD();
 }
 
 void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -91,7 +88,6 @@ void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AMuffinWarCharacter::StartShooting);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AMuffinWarCharacter::StopShooting);
-	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMuffinWarCharacter::OnPauseButtonPressed);
 
 	InputComponent = PlayerInputComponent;
 }
@@ -183,15 +179,6 @@ void AMuffinWarCharacter::SaveBulletClass(UClass* Class)
 	BulletClass = Class;
 }
 
-void AMuffinWarCharacter::ShowHUD(TSubclassOf<UBaseHUD> UserWidgetClass)
-{
-	HUD = CreateWidget<UBaseHUD>(UGameplayStatics::GetPlayerController(this,0), UserWidgetClass);
-	if (HUD) 
-	{
-		HUD->AddToViewport();
-	}
-}
-
 void AMuffinWarCharacter::SpawnBullet() 
 {
 	if (BulletClass)
@@ -214,7 +201,7 @@ void AMuffinWarCharacter::OnOverlapBegin(AActor* OtherActor, UPrimitiveComponent
 		ABaseEnemyMuffin* Enemy = Cast<ABaseEnemyMuffin>(OtherActor);
 		if (Enemy && !(Enemy->IsDead()) && Cast<UBoxComponent>(OtherComponent))
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::DamageMuffin, 1.0f, true, 0.01f);
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::OnOverlap, 1.0f, true, 0.01f);
 		}
 	}
 }
@@ -238,22 +225,19 @@ void AMuffinWarCharacter::OnPauseButtonPressed()
 		if (GameMode->IsGamePaused())
 		{
 			GameMode->UnpauseGame();
-			HUD->AddToViewport();
+			ShowHUD();
 		}
 		else
 		{
-			HUD->RemoveFromParent();
+			RemoveHUD();
 			GameMode->PauseGame();
 		}
 	}
 }
 
-void AMuffinWarCharacter::DamageMuffin() 
+void AMuffinWarCharacter::OnOverlap() 
 {
-	if (HUD) 
-	{
-		HUD->OnDamageReceived();
-	}
+	DamageMuffin();
 }
 
 void AMuffinWarCharacter::Kill()
@@ -268,7 +252,7 @@ void AMuffinWarCharacter::Kill()
 		AMuffinWarGameMode* GameMode = Cast<AMuffinWarGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 		if (GameMode)
 		{
-			HUD->RemoveFromParent();
+			RemoveHUD();
 			GameMode->OnPlayerDeath();
 		}
 	}
