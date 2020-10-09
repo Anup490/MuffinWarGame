@@ -14,6 +14,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+#define MATERIAL_PARAMETER "EffectColor"
+
 AMuffinWarCharacter::AMuffinWarCharacter()
 {
 	// Set size for collision capsule
@@ -208,9 +210,9 @@ void AMuffinWarCharacter::OnOverlapBegin(AActor* OtherActor, UPrimitiveComponent
 
 void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent)
 {
-	if (!bIsDead)
+	if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
 	{
-		if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
+		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		{
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 		}
@@ -237,7 +239,20 @@ void AMuffinWarCharacter::OnPauseButtonPressed()
 
 void AMuffinWarCharacter::OnOverlap() 
 {
+	GetMesh()->SetVectorParameterValueOnMaterials(MATERIAL_PARAMETER, To4DVector(DamageColor));
 	DamageMuffin();
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, this, &AMuffinWarCharacter::RestoreColor, 0.5f);
+}
+
+void AMuffinWarCharacter::RestoreColor()
+{
+	GetMesh()->SetVectorParameterValueOnMaterials(MATERIAL_PARAMETER, To4DVector(OriginalColor));
+}
+
+FVector4 AMuffinWarCharacter::To4DVector(FLinearColor Color)
+{
+	return FVector4(Color.R, Color.G, Color.B, Color.A);
 }
 
 void AMuffinWarCharacter::Kill()

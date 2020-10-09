@@ -19,6 +19,9 @@ class AMuffinWarCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	const FLinearColor DamageColor = FLinearColor::Red;
+	const FLinearColor OriginalColor = FLinearColor::White;
+
 	UClass* BulletClass;
 	bool bIsShooting;
 	bool bIsDead;
@@ -26,6 +29,8 @@ class AMuffinWarCharacter : public ACharacter
 	class UInputComponent* InputComponent;
 
 	void OnOverlap();
+	void RestoreColor();
+	FVector4 To4DVector(FLinearColor Color);
 public:
 	AMuffinWarCharacter();
 
