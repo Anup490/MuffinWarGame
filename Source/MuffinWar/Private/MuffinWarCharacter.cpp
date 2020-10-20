@@ -1,16 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "MuffinWarCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "BaseBullet.h"
+#include "BaseEnemyMuffin.h"
+#include "BaseHUD.h"
+#include "MuffinWarGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
-//////////////////////////////////////////////////////////////////////////
-// AMuffinWarCharacter
+#define MATERIAL_PARAMETER "EffectColor"
 
 AMuffinWarCharacter::AMuffinWarCharacter()
 {
@@ -45,10 +49,19 @@ AMuffinWarCharacter::AMuffinWarCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	Scene = CreateDefaultSubobject<USceneComponent>("Scene");
+	Scene->SetupAttachment(RootComponent);
+
+	BulletClass = 0;
+	InputComponent = 0;
+	bIsShooting = false;
+	bIsDead = false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void AMuffinWarCharacter::ResumeHUDDisplay()
+{
+	ShowHUD();
+}
 
 void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -74,8 +87,12 @@ void AMuffinWarCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AMuffinWarCharacter::OnResetVR);
-}
+	
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AMuffinWarCharacter::StartShooting);
+	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AMuffinWarCharacter::StopShooting);
 
+	InputComponent = PlayerInputComponent;
+}
 
 void AMuffinWarCharacter::OnResetVR()
 {
@@ -84,51 +101,179 @@ void AMuffinWarCharacter::OnResetVR()
 
 void AMuffinWarCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AMuffinWarCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AMuffinWarCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	if (!bIsDead)
+	{
+		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		SetActorRotation(YawRotation);
+	}
 }
 
 void AMuffinWarCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (!bIsDead)
+	{
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void AMuffinWarCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if (!bIsDead)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if ((Controller != NULL) && (Value != 0.0f))
+		{
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
 void AMuffinWarCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if (!bIsDead)
 	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
+		if ((Controller != NULL) && (Value != 0.0f))
+		{
+			// find out which way is right
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get right vector 
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// add movement in that direction
+			AddMovementInput(Direction, Value);
+		}
 	}
+}
+
+void AMuffinWarCharacter::StartShooting() 
+{
+	bIsShooting = true;
+	SpawnBullet();
+}
+
+void AMuffinWarCharacter::StopShooting() 
+{
+	bIsShooting = false;
+}
+
+void AMuffinWarCharacter::SaveBulletClass(UClass* Class) 
+{
+	BulletClass = Class;
+}
+
+void AMuffinWarCharacter::SpawnBullet() 
+{
+	if (BulletClass)
+	{
+		FVector Location = Scene->GetComponentLocation();
+		FRotator Rotation = Scene->GetComponentRotation();
+		GetWorld()->SpawnActor<ABaseBullet>(BulletClass, Location, Rotation, FActorSpawnParameters());
+	}
+}
+
+bool AMuffinWarCharacter::IsShooting() const
+{
+	return bIsShooting;
+}
+
+void AMuffinWarCharacter::OnOverlapBegin(AActor* OtherActor, UPrimitiveComponent* OtherComponent)
+{
+	if (!bIsDead)
+	{
+		ABaseEnemyMuffin* Enemy = Cast<ABaseEnemyMuffin>(OtherActor);
+		if (Enemy && !(Enemy->IsDead()) && Cast<UBoxComponent>(OtherComponent))
+		{
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AMuffinWarCharacter::OnOverlap, 1.0f, true, 0.01f);
+		}
+	}
+}
+
+void AMuffinWarCharacter::OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent)
+{
+	if (Cast<ABaseEnemyMuffin>(OtherActor) && Cast<UBoxComponent>(OtherComponent))
+	{
+		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
+		{
+			GetWorldTimerManager().ClearTimer(TimerHandle);
+		}
+	}
+}
+
+void AMuffinWarCharacter::OnPauseButtonPressed()
+{
+	AMuffinWarGameMode* GameMode = Cast<AMuffinWarGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+	{
+		if (GameMode->IsGamePaused())
+		{
+			GameMode->UnpauseGame();
+			ShowHUD();
+		}
+		else
+		{
+			RemoveHUD();
+			GameMode->PauseGame();
+		}
+	}
+}
+
+void AMuffinWarCharacter::OnOverlap() 
+{
+	GetMesh()->SetVectorParameterValueOnMaterials(MATERIAL_PARAMETER, To4DVector(DamageColor));
+	DamageMuffin();
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, this, &AMuffinWarCharacter::RestoreColor, 0.5f);
+}
+
+void AMuffinWarCharacter::RestoreColor()
+{
+	GetMesh()->SetVectorParameterValueOnMaterials(MATERIAL_PARAMETER, To4DVector(OriginalColor));
+}
+
+FVector4 AMuffinWarCharacter::To4DVector(FLinearColor Color)
+{
+	return FVector4(Color.R, Color.G, Color.B, Color.A);
+}
+
+void AMuffinWarCharacter::Kill()
+{
+	if (!bIsDead)
+	{
+		bIsDead = true;	
+		if (InputComponent)
+		{
+			InputComponent->ClearActionBindings();
+		}
+		AMuffinWarGameMode* GameMode = Cast<AMuffinWarGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (GameMode)
+		{
+			RemoveHUD();
+			GameMode->OnPlayerDeath();
+		}
+	}
+}
+
+bool AMuffinWarCharacter::IsDead() const
+{
+	return bIsDead;
 }

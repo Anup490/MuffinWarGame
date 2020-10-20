@@ -18,6 +18,19 @@ class AMuffinWarCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	const FLinearColor DamageColor = FLinearColor::Red;
+	const FLinearColor OriginalColor = FLinearColor::White;
+
+	UClass* BulletClass;
+	bool bIsShooting;
+	bool bIsDead;
+	FTimerHandle TimerHandle;
+	class UInputComponent* InputComponent;
+
+	void OnOverlap();
+	void RestoreColor();
+	FVector4 To4DVector(FLinearColor Color);
 public:
 	AMuffinWarCharacter();
 
@@ -29,7 +42,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UFUNCTION(BlueprintCallable)
+	void ResumeHUDDisplay();
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class USceneComponent* Scene;
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapBegin(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlapEnd(AActor* OtherActor, class UPrimitiveComponent* OtherComponent);
+
+	UFUNCTION(BlueprintCallable)
+	void OnPauseButtonPressed(); 
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -58,15 +84,33 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	void StartShooting();
+	void StopShooting();
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+	void SpawnBullet();
 
+	UFUNCTION(BlueprintCallable)
+	void SaveBulletClass(UClass* Class);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DamageMuffin();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowHUD();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RemoveHUD();
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	bool IsShooting() const;
+	void Kill();
+	bool IsDead() const;
 };
 

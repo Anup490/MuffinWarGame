@@ -2,7 +2,10 @@
 
 #include "MuffinWarGameMode.h"
 #include "MuffinWarCharacter.h"
+#include "MuffinWarGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 AMuffinWarGameMode::AMuffinWarGameMode()
 {
@@ -12,4 +15,18 @@ AMuffinWarGameMode::AMuffinWarGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+	bIsGamePaused = false;
+}
+
+bool AMuffinWarGameMode::IsGamePaused()
+{
+	return bIsGamePaused;
+}
+
+void AMuffinWarGameMode::StartPlay()
+{
+	Super::StartPlay();
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	FInputModeGameOnly InputMode;
+	Controller->SetInputMode(InputMode);	
 }

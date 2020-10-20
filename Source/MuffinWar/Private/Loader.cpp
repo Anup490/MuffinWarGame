@@ -18,17 +18,17 @@ public:
 
 		void Construct(const FArguments& Args) {
 		static FName LoadingScreenName(TEXT("/Game/ThirdPersonCPP/UI/Loading"));
-		LoadingBrush = new FLoadingScreenBrush(LoadingScreenName, FVector2D(0, 0));
+		LoadingBrush = new FLoadingScreenBrush(LoadingScreenName, FVector2D(1024, 256));
 		ChildSlot
 			[
 				SNew(SOverlay)
 				+ SOverlay::Slot()
-			.HAlign(HAlign_Fill)
-			.VAlign(VAlign_Fill)
-			[
-				SNew(SImage)
-				.Image(LoadingBrush)
-			]
+				.HAlign(HAlign_Fill)
+				.VAlign(VAlign_Fill)
+				[
+					SNew(SImage)
+					.Image(LoadingBrush)
+				]
 			];
 	}
 };
@@ -40,7 +40,13 @@ void ULoader::ShowLoadingScreen() {
 	LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
 	LoadingScreen.bWaitForManualStop = true;
 	LoadingScreen.bAllowEngineTick = true;
-	LoadingScreen.MinimumLoadingScreenDisplayTime = 60.f;
+	LoadingScreen.MinimumLoadingScreenDisplayTime = 1000.f;
 	LoadingScreen.WidgetLoadingScreen = SNew(SLoadingScreen);
 	GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
+	UE_LOG(LogTemp, Warning, TEXT("isMoviePlayerEnabled :: %d"), IsMoviePlayerEnabled())
+
+
+	
+
+
 }
