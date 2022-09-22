@@ -5,6 +5,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 ABaseBullet::ABaseBullet()
 {
@@ -26,21 +28,15 @@ void ABaseBullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABaseBullet::OnHit(UParticleSystem* ParticleSystem) 
+void ABaseBullet::Explode()
 {
-	Explode(ParticleSystem);
-}
-
-void ABaseBullet::Explode(UParticleSystem* ParticleSystem)
-{
+	Mesh->SetVisibility(false);
 	if (bHasNotExploded) {
 		bHasNotExploded = false;
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(), ParticleSystem, GetActorLocation(), FRotator(0, 0, 0), FVector(1, 1, 1), true, EPSCPoolMethod::None, true
-		);
+		UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraExplode, Capsule, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 	}
 	FTimerHandle Handle;
-	GetWorldTimerManager().SetTimer(Handle, this, &ABaseBullet::Kill, 1.0f, false, 0.1f);
+	GetWorldTimerManager().SetTimer(Handle, this, &ABaseBullet::Kill, 1.0f, false, 1.0f);
 }
 
 void ABaseBullet::Kill()
