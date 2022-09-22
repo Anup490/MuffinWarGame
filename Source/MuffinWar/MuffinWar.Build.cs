@@ -9,6 +9,6 @@ public class MuffinWar : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG" });
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate","SlateCore","InputCore","MoviePlayer", "AIModule", "GameplayTasks", "NavigationSystem" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate","SlateCore","InputCore","MoviePlayer", "AIModule", "GameplayTasks", "NavigationSystem", "Niagara" });
 	}
 }
